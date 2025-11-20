@@ -1,6 +1,8 @@
 import { GoogleGenAI, Type, Schema, Modality } from "@google/genai";
 import { StoryData, WordChallenge, CrosswordData } from "../types";
 
+declare const process: any;
+
 const apiKey = process.env.API_KEY;
 const ai = new GoogleGenAI({ apiKey: apiKey });
 
