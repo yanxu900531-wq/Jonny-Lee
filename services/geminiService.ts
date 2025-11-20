@@ -6,6 +6,17 @@ declare const process: any;
 const apiKey = process.env.API_KEY;
 const ai = new GoogleGenAI({ apiKey: apiKey });
 
+// --- Vocabulary Expansion Lists ---
+
+const VOCAB_CATEGORIES = [
+  "Animals (Zoo, Farm, Wild)", "Food & Drinks", "School & Classroom Objects", 
+  "Family & People", "Jobs & Occupations", "The Body & Health", 
+  "Clothes & Accessories", "Home & Furniture", "City & Places", 
+  "Nature & Weather", "Sports & Hobbies", "Transport & Travel", 
+  "Colors & Shapes", "Time & Calendar", "Feelings & Emotions",
+  "Verbs (Daily Actions)", "Adjectives (Opposites, Description)"
+];
+
 // --- Helper Schemas ---
 
 const questionSchema: Schema = {
@@ -138,10 +149,22 @@ export const generateStory = async (topic: string): Promise<StoryData> => {
 
 export const generateWordChallenge = async (): Promise<WordChallenge> => {
   const model = "gemini-2.5-flash";
-  const prompt = `Generate a random vocabulary challenge for a 4th grader.
-  Pick a common, useful English noun, verb, or adjective suitable for this age.
-  Create a fill-in-the-blank sentence.
-  Provide Chinese options for the definition.`;
+  
+  // Randomly select a category to ensure variety
+  const category = VOCAB_CATEGORIES[Math.floor(Math.random() * VOCAB_CATEGORIES.length)];
+
+  const prompt = `Generate a vocabulary challenge for a 4th grader (approx. 9-10 years old).
+  
+  CATEGORY: ${category}
+  
+  INSTRUCTIONS:
+  1. Pick a specific English word from standard Primary School English Curricula (reference: PEP Primary English or Cambridge Young Learners - Movers/Flyers levels).
+  2. The word MUST belong to the category '${category}'.
+  3. Avoid extremely simple words (like "cat", "dog", "red") unless they are used in a complex context. Aim for Grade 3-5 level words (e.g., instead of "look", use "search"; instead of "happy", use "excited" or "delighted").
+  4. Create a fill-in-the-blank sentence where the context makes the missing word clear.
+  5. Provide 4 Chinese options (1 correct, 3 incorrect but plausible distractors).
+  
+  Return JSON.`;
 
   const response = await ai.models.generateContent({
     model,
@@ -149,6 +172,7 @@ export const generateWordChallenge = async (): Promise<WordChallenge> => {
     config: {
       responseMimeType: "application/json",
       responseSchema: wordChallengeSchema,
+      temperature: 0.9, // Higher temperature for more variety
     }
   });
 

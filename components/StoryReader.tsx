@@ -11,16 +11,21 @@ interface StoryReaderProps {
 }
 
 const quickTopics = [
-  { emoji: '✨', label: 'Paimon (Genshin)', prompt: 'Paimon and the Traveler from Genshin Impact finding treasure' },
-  { emoji: '💣', label: 'Klee (Genshin)', prompt: 'Klee from Genshin Impact going on a fun adventure' },
-  { emoji: '🍃', label: 'Nahida (Genshin)', prompt: 'Nahida the Dendro Archon sharing wisdom' },
-  { emoji: '🦄', label: 'Unicorns', prompt: 'A magical unicorn in an enchanted forest' },
-  { emoji: '🧱', label: 'Minecraft', prompt: 'Building a giant castle in Minecraft' },
-  { emoji: '🚀', label: 'Space', prompt: 'An astronaut exploring a new purple planet' },
-  { emoji: '🐶', label: 'Puppies', prompt: 'A surprise party with cute puppies' },
-  { emoji: '🧜‍♀️', label: 'Mermaids', prompt: 'Mermaids swimming in the deep blue sea' },
-  { emoji: '🦖', label: 'Dinosaurs', prompt: 'A friendly T-Rex who loves to read books' },
-  { emoji: '🦸', label: 'Superhero', prompt: 'A young superhero saving the city' },
+  { emoji: '🎭', label: 'Furina', prompt: 'Furina, the star of Fontaine, directing a dramatic stage play for ocean creatures while eating cake' },
+  { emoji: '⚔️', label: 'Skirk', prompt: 'Skirk, the mysterious sword master from the shadows, teaching a student how to fight a giant space whale' },
+  { emoji: '🐉', label: 'Neuvillette', prompt: 'Neuvillette the Hydro Dragon feeling sad and making it rain, then judging a dispute between two crabs' },
+  { emoji: '☂️', label: 'Navia', prompt: 'Navia, the boss of Spina di Rosula, baking giant macarons and solving a mystery in Poisson' },
+  { emoji: '🍵', label: 'Zhongli', prompt: 'Zhongli walking through Liyue Harbor sharing ancient wisdom about rocks but realizing he forgot his wallet (Mora)' },
+  { emoji: '🍃', label: 'Venti', prompt: 'Venti the bard playing a magical song on his lyre to calm the wind dragon Dvalin in Mondstadt' },
+  { emoji: '🎆', label: 'Yoimiya', prompt: 'Yoimiya making the most colorful fireworks display for the summer festival in Inazuma' },
+  { emoji: '🎩', label: 'Lyney', prompt: 'Lyney the magician performing a magic show in the Opera Epiclese where a cat disappears and reappears in a hat' },
+  { emoji: '👻', label: 'Hu Tao', prompt: 'Hu Tao writing funny poems and playing hide-and-seek with a friendly ghost named Boo Tao at night' },
+  { emoji: '👺', label: 'Xiao', prompt: 'Xiao the Yaksha protecting Liyue from bad monsters and then enjoying a bowl of Almond Tofu' },
+  { emoji: '🍳', label: 'Xiangling', prompt: 'Xiangling and Guoba the bear searching for spicy chili peppers to cook a delicious but weird new dish' },
+  { emoji: '⚡', label: 'Raiden Shogun', prompt: 'The Raiden Shogun trying to cook a meal in her kitchen but accidentally causing a thunderstorm' },
+  { emoji: '✨', label: 'Paimon', prompt: 'Paimon and the Traveler discovering a hidden treasure chest filled with delicious snacks' },
+  { emoji: '💣', label: 'Klee', prompt: 'Klee escaping solitary confinement to go fish blasting at Starfell Lake (Jean is chasing her)' },
+  { emoji: '🍃', label: 'Nahida', prompt: 'Nahida the Dendro Archon using her dreams to help a sad child feel happy again' },
 ];
 
 export const StoryReader: React.FC<StoryReaderProps> = ({ onAddScore, onBack, onLearnWords }) => {
@@ -167,7 +172,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({ onAddScore, onBack, on
           </div>
           
           <div className="pt-6">
-            <p className="text-sm text-gray-400 font-bold mb-3 uppercase tracking-wider">Quick Picks</p>
+            <p className="text-sm text-gray-400 font-bold mb-3 uppercase tracking-wider">Genshin Impact Picks ✨</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {quickTopics.map(t => (
                 <button 
