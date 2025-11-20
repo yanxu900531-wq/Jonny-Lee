@@ -1,0 +1,7 @@
+{
+  "name": "WonderWord English",
+  "description": "A fun, interactive English learning playground for 4th graders featuring stories, word games, and a chat buddy.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
