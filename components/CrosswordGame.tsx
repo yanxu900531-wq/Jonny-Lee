@@ -19,10 +19,12 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
   const [userInputs, setUserInputs] = useState<string[][]>([]);
   const [lockedCells, setLockedCells] = useState<boolean[][]>([]); // Hints are locked
   const [solved, setSolved] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const loadGame = async () => {
     setLoading(true);
     setSolved(false);
+    setFeedback(null);
     setData(null);
     try {
       const crosswordData = await generateCrossword();
@@ -67,7 +69,7 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
 
     } catch (error) {
       console.error(error);
-      alert("Failed to load crossword.");
+      setFeedback({ type: 'error', text: "Failed to load crossword." });
     } finally {
       setLoading(false);
     }
@@ -79,6 +81,7 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
 
   const handleInputChange = (row: number, col: number, val: string) => {
     if (lockedCells[row][col]) return;
+    setFeedback(null);
     
     // Handle empty (delete)
     if (val === '') {
@@ -88,7 +91,7 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
       return;
     }
 
-    // Take last character for new input
+    // Take last character for new input to prevent multi-char strings from autocomplete
     const lastChar = val.slice(-1);
 
     // Only allow letters
@@ -116,11 +119,12 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
 
     if (allCorrect) {
       setSolved(true);
+      setFeedback({ type: 'success', text: "Awesome! +50 Points 🌟" });
       onAddScore(50);
       const learned = data.words.map(w => w.word);
       onLearnWords(learned);
     } else {
-      alert("Not quite! Check your spelling and try again.");
+      setFeedback({ type: 'error', text: "Not quite! Check your spelling and try again." });
     }
   };
 
@@ -137,7 +141,7 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-brand-light overflow-auto">
              <h2 className="text-2xl font-display font-bold text-center mb-4 text-brand-dark">{data.title}</h2>
-             <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
+             <div className="grid gap-1 bg-gray-200 p-1 rounded-xl" style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
                {grid.map((row, rIdx) => (
                  row.map((cell, cIdx) => {
                    const isActive = cell === '#';
@@ -147,32 +151,34 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
                    const startWords = data.words.filter(w => w.startY === rIdx && w.startX === cIdx);
                    
                    return (
-                     <div key={`${rIdx}-${cIdx}`} className="relative aspect-square w-8 sm:w-10">
+                     <div key={`${rIdx}-${cIdx}`} className={`relative aspect-square w-8 sm:w-10 ${isActive ? 'bg-white' : 'bg-transparent'}`}>
                        {isActive ? (
                          <>
+                           {startWords.length > 0 && (
+                             <span className="absolute top-0.5 left-0.5 text-[10px] leading-none font-bold text-gray-600 z-20 pointer-events-none bg-white/80 px-0.5 rounded">
+                               {startWords.map(w => w.id).join('/')}
+                             </span>
+                           )}
                            <input 
                              id={`cell-${rIdx}-${cIdx}`}
+                             name={`cell-${rIdx}-${cIdx}`}
                              type="text"
                              maxLength={1}
                              autoComplete="off"
                              autoCorrect="off"
+                             autoCapitalize="characters"
                              spellCheck="false"
                              value={userInputs[rIdx][cIdx]}
                              onChange={(e) => handleInputChange(rIdx, cIdx, e.target.value)}
                              disabled={solved || isLocked}
-                             className={`w-full h-full text-center font-bold uppercase text-lg sm:text-xl border-2 rounded focus:outline-none focus:border-brand focus:bg-brand-light/20
-                               ${solved ? 'bg-green-100 border-green-400 text-green-700' : ''} 
-                               ${isLocked && !solved ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300' : 'bg-white border-gray-300'}
+                             className={`w-full h-full text-center font-bold uppercase text-lg sm:text-xl border rounded focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent z-10 relative bg-transparent
+                               ${solved ? 'text-green-600' : 'text-gray-800'} 
+                               ${isLocked ? 'bg-gray-50' : 'bg-white'}
                              `}
                            />
-                           {startWords.length > 0 && (
-                             <span className="absolute top-0 left-0.5 text-[10px] leading-none font-bold text-gray-500 z-10 pointer-events-none">
-                               {startWords.map(w => w.id).join('/')}
-                             </span>
-                           )}
                          </>
                        ) : (
-                         <div className="w-full h-full bg-gray-50 rounded opacity-50"></div>
+                         <div className="w-full h-full"></div>
                        )}
                      </div>
                    );
@@ -180,13 +186,16 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
                ))}
              </div>
              
-             <div className="mt-6 flex justify-center">
+             <div className="mt-6 flex flex-col items-center">
+                {feedback && (
+                    <div className={`mb-3 font-bold px-4 py-2 rounded-xl animate-fade-in ${feedback.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                        {feedback.text}
+                    </div>
+                )}
                 {!solved ? (
                    <Button onClick={checkPuzzle}>Check Answers</Button>
                 ) : (
-                   <div className="text-2xl font-display font-bold text-green-500 animate-bounce">
-                     Success! +50 Points 🌟
-                   </div>
+                   <Button onClick={loadGame} variant="secondary">Play Again</Button>
                 )}
              </div>
           </div>

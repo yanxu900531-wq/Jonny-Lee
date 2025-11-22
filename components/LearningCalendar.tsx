@@ -51,10 +51,10 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
           onClick={() => hasWords ? setSelectedDate(dateStr) : null}
           className={`h-16 sm:h-24 rounded-xl border-2 flex flex-col items-start justify-start p-2 transition-all relative overflow-hidden group
             ${hasWords 
-              ? 'bg-green-50 border-green-300 text-green-900 shadow-sm hover:bg-green-100 hover:shadow-md cursor-pointer' 
+              ? 'bg-green-100 border-green-400 shadow-sm hover:bg-green-200 hover:shadow-md cursor-pointer ring-2 ring-green-100 ring-offset-1' 
               : 'bg-gray-50 border-gray-100 text-gray-300 cursor-default'
             }
-            ${selectedDate === dateStr ? 'ring-4 ring-brand/30 !border-brand z-10' : ''}
+            ${selectedDate === dateStr ? 'ring-4 ring-brand/50 !border-brand z-10 scale-105' : ''}
           `}
         >
           <span className={`text-sm font-bold ${hasWords ? 'text-green-800' : 'text-gray-300'}`}>{d}</span>
@@ -63,16 +63,16 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
             <>
               <div className="mt-1 w-full relative z-10">
                 <div className="flex gap-1 flex-wrap">
-                  <span className="text-[10px] sm:text-xs bg-white/60 text-green-700 px-1.5 py-0.5 rounded font-bold border border-green-100">
+                  <span className="text-[10px] sm:text-xs bg-white text-green-700 px-1.5 py-0.5 rounded font-bold border border-green-200 shadow-sm">
                     {words.length} words
                   </span>
                 </div>
-                <div className="mt-1 text-[10px] sm:text-xs text-green-600/80 truncate w-full text-left pl-1">
+                <div className="mt-1 text-[10px] sm:text-xs text-green-800/80 truncate w-full text-left pl-1 font-medium">
                    {words[0]}...
                 </div>
               </div>
               {/* Decorative Watermark */}
-              <div className="absolute -bottom-2 -right-2 text-3xl sm:text-4xl opacity-20 rotate-12 group-hover:scale-110 transition-transform pointer-events-none">
+              <div className="absolute -bottom-2 -right-2 text-3xl sm:text-4xl opacity-40 rotate-12 group-hover:scale-110 group-hover:rotate-0 transition-all pointer-events-none">
                 🌟
               </div>
             </>
@@ -93,7 +93,7 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl">
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border-t-8 border-brand-light">
           <div className="flex justify-between items-center mb-6">
              <h3 className="text-xl font-bold text-gray-800 capitalize">{monthName}</h3>
           </div>
@@ -123,7 +123,7 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
               
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 {selectedWords.map((word, idx) => (
-                  <div key={idx} className="bg-yellow-50 p-3 rounded-xl text-lg font-bold text-gray-700 flex items-center gap-3">
+                  <div key={idx} className="bg-yellow-50 p-3 rounded-xl text-lg font-bold text-gray-700 flex items-center gap-3 border border-yellow-100">
                     <span className="text-yellow-500">★</span> {word}
                   </div>
                 ))}

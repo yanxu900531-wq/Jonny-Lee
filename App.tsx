@@ -6,7 +6,6 @@ import { ChatBuddy } from './components/ChatBuddy';
 import { CrosswordGame } from './components/CrosswordGame';
 import { DictationPractice } from './components/DictationPractice';
 import { LearningCalendar } from './components/LearningCalendar';
-import { SmartImage } from './components/SmartImage';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
@@ -23,10 +22,9 @@ const App: React.FC = () => {
     localStorage.setItem('wonderWordScore', score.toString());
   }, [score]);
 
-  // Cleanup legacy icons to prevent QuotaExceededError
+  // Clean up legacy image data to ensure we have space for calendar history
   useEffect(() => {
     try {
-      // We loop backwards because removing items changes the length/indices
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -35,9 +33,6 @@ const App: React.FC = () => {
         }
       }
       keysToRemove.forEach(key => localStorage.removeItem(key));
-      if (keysToRemove.length > 0) {
-        console.log(`Cleaned up ${keysToRemove.length} legacy icons from LocalStorage.`);
-      }
     } catch (e) {
       console.warn("Cleanup failed", e);
     }
@@ -143,54 +138,42 @@ const Home: React.FC<{ onViewChange: (view: AppView) => void }> = ({ onViewChang
         <FeatureCard 
           title="Story Magic"
           description="Read stories and now listen to them!"
-          prompt="A magical open book with sparkling letters flying out, cute 3d icon white background"
-          cacheKey="story_icon_v2"
-          fallbackEmoji="📚"
+          emoji="📚"
           color="bg-fun-pink"
           onClick={() => onViewChange(AppView.STORY)}
         />
         <FeatureCard 
           title="Word Wizard"
           description="Guess the word from emojis and sentences."
-          prompt="A magical wizard hat and a spellbook, cute 3d cartoon icon, white background"
-          cacheKey="quiz_icon_v3" 
-          fallbackEmoji="🧙‍♂️"
+          emoji="🧙‍♂️"
           color="bg-brand"
           onClick={() => onViewChange(AppView.QUIZ)}
         />
         <FeatureCard 
           title="Sparky Chat"
           description="Talk to Sparky. Now with Voice Mode!"
-          prompt="A friendly cute squirrel face waving hand, 3d cartoon icon white background"
-          cacheKey="chat_icon_v2"
-          fallbackEmoji="🐿️"
+          emoji="🐿️"
           color="bg-fun-purple"
           onClick={() => onViewChange(AppView.CHAT)}
         />
         <FeatureCard 
           title="Crossword Fun"
           description="Solve puzzles with words you know."
-          prompt="A colorful crossword puzzle grid with a pencil, cute 3d icon white background"
-          cacheKey="crossword_icon_v2"
-          fallbackEmoji="🧩"
+          emoji="🧩"
           color="bg-fun-green"
           onClick={() => onViewChange(AppView.CROSSWORD)}
         />
          <FeatureCard 
           title="Dictation"
           description="Take a photo of your words and practice spelling."
-          prompt="A notepad with a camera and a pencil, cute 3d icon white background"
-          cacheKey="dictation_icon_v2"
-          fallbackEmoji="📝"
+          emoji="📝"
           color="bg-fun-yellow"
           onClick={() => onViewChange(AppView.DICTATION)}
         />
         <FeatureCard 
           title="My Journal"
           description="See all the words you learned today!"
-          prompt="A colorful calendar with a big gold star and heart, cute 3d icon white background"
-          cacheKey="calendar_icon_v2"
-          fallbackEmoji="📅"
+          emoji="📅"
           color="bg-red-400"
           onClick={() => onViewChange(AppView.CALENDAR)}
         />
@@ -202,12 +185,10 @@ const Home: React.FC<{ onViewChange: (view: AppView) => void }> = ({ onViewChang
 const FeatureCard: React.FC<{ 
   title: string, 
   description: string, 
-  prompt: string, 
-  cacheKey: string,
-  fallbackEmoji: string, 
+  emoji: string, 
   color: string, 
   onClick: () => void 
-}> = ({ title, description, prompt, cacheKey, fallbackEmoji, color, onClick }) => (
+}> = ({ title, description, emoji, color, onClick }) => (
   <button 
     onClick={onClick}
     className="group relative overflow-hidden rounded-3xl bg-white p-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 text-left border-b-8 border-gray-100 hover:border-transparent h-full flex flex-col"
@@ -216,13 +197,9 @@ const FeatureCard: React.FC<{
     
     {/* Image Container */}
     <div className="w-full h-48 bg-gray-50 overflow-hidden relative flex items-center justify-center">
-      <SmartImage 
-        prompt={prompt} 
-        cacheKey={cacheKey} 
-        alt={title} 
-        fallbackEmoji={fallbackEmoji}
-        className="w-full h-full group-hover:scale-110 transition-transform duration-500" 
-      />
+      <div className="text-8xl transform group-hover:scale-125 transition-transform duration-500 drop-shadow-2xl">
+        {emoji}
+      </div>
     </div>
 
     <div className="p-8 flex-1 flex flex-col">
