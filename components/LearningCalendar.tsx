@@ -49,26 +49,33 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
         <button 
           key={d} 
           onClick={() => hasWords ? setSelectedDate(dateStr) : null}
-          className={`h-16 sm:h-24 rounded-xl border-2 flex flex-col items-start justify-start p-2 transition-all
+          className={`h-16 sm:h-24 rounded-xl border-2 flex flex-col items-start justify-start p-2 transition-all relative overflow-hidden group
             ${hasWords 
-              ? 'bg-white border-brand-light shadow-md hover:shadow-lg hover:border-brand cursor-pointer' 
+              ? 'bg-green-50 border-green-300 text-green-900 shadow-sm hover:bg-green-100 hover:shadow-md cursor-pointer' 
               : 'bg-gray-50 border-gray-100 text-gray-300 cursor-default'
             }
-            ${selectedDate === dateStr ? 'ring-4 ring-brand/30 border-brand' : ''}
+            ${selectedDate === dateStr ? 'ring-4 ring-brand/30 !border-brand z-10' : ''}
           `}
         >
-          <span className={`text-sm font-bold ${hasWords ? 'text-gray-700' : 'text-gray-300'}`}>{d}</span>
+          <span className={`text-sm font-bold ${hasWords ? 'text-green-800' : 'text-gray-300'}`}>{d}</span>
+          
           {hasWords && (
-            <div className="mt-1 w-full">
-              <div className="flex gap-1 flex-wrap">
-                <span className="text-xs bg-yellow-100 text-yellow-700 px-1 rounded">
-                  {words.length} words
-                </span>
+            <>
+              <div className="mt-1 w-full relative z-10">
+                <div className="flex gap-1 flex-wrap">
+                  <span className="text-[10px] sm:text-xs bg-white/60 text-green-700 px-1.5 py-0.5 rounded font-bold border border-green-100">
+                    {words.length} words
+                  </span>
+                </div>
+                <div className="mt-1 text-[10px] sm:text-xs text-green-600/80 truncate w-full text-left pl-1">
+                   {words[0]}...
+                </div>
               </div>
-              <div className="mt-1 text-xs text-gray-400 truncate w-full text-left">
-                 {words[0]}...
+              {/* Decorative Watermark */}
+              <div className="absolute -bottom-2 -right-2 text-3xl sm:text-4xl opacity-20 rotate-12 group-hover:scale-110 transition-transform pointer-events-none">
+                🌟
               </div>
-            </div>
+            </>
           )}
         </button>
       );
@@ -125,7 +132,7 @@ export const LearningCalendar: React.FC<LearningCalendarProps> = ({ onBack }) =>
           ) : (
             <div className="text-center py-12 text-gray-400">
               <div className="text-6xl mb-4 grayscale opacity-50">📅</div>
-              <p>Click on a day to see what you learned!</p>
+              <p>Click on a green day to see your words!</p>
             </div>
           )}
         </div>

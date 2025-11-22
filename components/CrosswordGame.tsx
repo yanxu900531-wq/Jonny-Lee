@@ -79,11 +79,23 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
 
   const handleInputChange = (row: number, col: number, val: string) => {
     if (lockedCells[row][col]) return;
-    if (val.length > 1) val = val.slice(-1);
-    if (!/^[a-zA-Z]*$/.test(val)) return;
+    
+    // Handle empty (delete)
+    if (val === '') {
+      const newInputs = [...userInputs.map(r => [...r])];
+      newInputs[row][col] = '';
+      setUserInputs(newInputs);
+      return;
+    }
+
+    // Take last character for new input
+    const lastChar = val.slice(-1);
+
+    // Only allow letters
+    if (!/^[a-zA-Z]$/.test(lastChar)) return;
 
     const newInputs = [...userInputs.map(r => [...r])];
-    newInputs[row][col] = val.toUpperCase();
+    newInputs[row][col] = lastChar.toUpperCase();
     setUserInputs(newInputs);
   };
 
@@ -130,26 +142,32 @@ export const CrosswordGame: React.FC<CrosswordGameProps> = ({ onAddScore, onBack
                  row.map((cell, cIdx) => {
                    const isActive = cell === '#';
                    const isLocked = lockedCells[rIdx][cIdx];
-                   const startWord = data.words.find(w => w.startY === rIdx && w.startX === cIdx);
+                   
+                   // Check for ALL words starting at this cell to display multiple IDs
+                   const startWords = data.words.filter(w => w.startY === rIdx && w.startX === cIdx);
                    
                    return (
                      <div key={`${rIdx}-${cIdx}`} className="relative aspect-square w-8 sm:w-10">
                        {isActive ? (
                          <>
                            <input 
+                             id={`cell-${rIdx}-${cIdx}`}
                              type="text"
                              maxLength={1}
+                             autoComplete="off"
+                             autoCorrect="off"
+                             spellCheck="false"
                              value={userInputs[rIdx][cIdx]}
                              onChange={(e) => handleInputChange(rIdx, cIdx, e.target.value)}
                              disabled={solved || isLocked}
-                             className={`w-full h-full text-center font-bold uppercase text-lg sm:text-xl border-2 rounded focus:outline-none focus:border-brand 
+                             className={`w-full h-full text-center font-bold uppercase text-lg sm:text-xl border-2 rounded focus:outline-none focus:border-brand focus:bg-brand-light/20
                                ${solved ? 'bg-green-100 border-green-400 text-green-700' : ''} 
                                ${isLocked && !solved ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300' : 'bg-white border-gray-300'}
                              `}
                            />
-                           {startWord && (
-                             <span className="absolute top-0 left-0.5 text-[10px] leading-none font-bold text-gray-500">
-                               {startWord.id}
+                           {startWords.length > 0 && (
+                             <span className="absolute top-0 left-0.5 text-[10px] leading-none font-bold text-gray-500 z-10 pointer-events-none">
+                               {startWords.map(w => w.id).join('/')}
                              </span>
                            )}
                          </>

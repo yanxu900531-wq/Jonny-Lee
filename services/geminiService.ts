@@ -1,10 +1,10 @@
 import { GoogleGenAI, Type, Schema, Modality } from "@google/genai";
 import { StoryData, WordChallenge, CrosswordData } from "../types";
 
-declare const process: any;
-
-const apiKey = process.env.API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey });
+// In Vite + Typescript via @types/node, process.env is available.
+// We use a fallback to empty string to satisfy TypeScript's string requirement for apiKey.
+// The actual replacement happens at build time via vite.config.ts.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
 // --- Vocabulary Expansion Lists ---
 
