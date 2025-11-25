@@ -1,3 +1,4 @@
+
 export enum AppView {
   HOME = 'HOME',
   STORY = 'STORY',
@@ -5,6 +6,7 @@ export enum AppView {
   CHAT = 'CHAT',
   CROSSWORD = 'CROSSWORD',
   DICTATION = 'DICTATION',
+  HOMEWORK_HELPER = 'HOMEWORK_HELPER',
   CALENDAR = 'CALENDAR'
 }
 
@@ -54,4 +56,20 @@ export interface CrosswordData {
 export interface DailyRecord {
   date: string; // YYYY-MM-DD
   words: string[];
+}
+
+export interface HomeworkCorrection {
+  questionNumber: string;
+  studentText: string; // What was read/written
+  isCorrect: boolean;
+  correctAnswer?: string;
+  explanation?: string;
+}
+
+export interface HomeworkAnalysisResult {
+  corrections: HomeworkCorrection[];
+  summary: {
+    commonErrors: string; // Analysis of why mistakes happened
+    solutions: string[]; // Tips for improvement
+  };
 }

@@ -1,9 +1,11 @@
+
 import { GoogleGenAI, Type, Schema, Modality } from "@google/genai";
-import { StoryData, WordChallenge, CrosswordData } from "../types";
+import { StoryData, WordChallenge, CrosswordData, HomeworkAnalysisResult } from "../types";
 
 // In Vite + Typescript via @types/node, process.env is available.
 // We use a fallback to empty string to satisfy TypeScript's string requirement for apiKey.
 // The actual replacement happens at build time via vite.config.ts.
+declare const process: any;
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
 
 // --- Vocabulary Expansion Lists ---
@@ -98,6 +100,39 @@ const wordListSchema: Schema = {
     }
   },
   required: ["words"]
+};
+
+const homeworkAnalysisSchema: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    corrections: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          questionNumber: { type: Type.STRING, description: "e.g., '1', 'Q2', or 'Exercise A'" },
+          studentText: { type: Type.STRING, description: "The English text identified in the image." },
+          isCorrect: { type: Type.BOOLEAN },
+          correctAnswer: { type: Type.STRING, description: "The correct answer if student is wrong." },
+          explanation: { type: Type.STRING, description: "Brief explanation of the error (Chinese)." }
+        },
+        required: ["questionNumber", "studentText", "isCorrect"]
+      }
+    },
+    summary: {
+      type: Type.OBJECT,
+      properties: {
+        commonErrors: { type: Type.STRING, description: "Summary of common mistake patterns in Chinese." },
+        solutions: { 
+          type: Type.ARRAY, 
+          items: { type: Type.STRING },
+          description: "Actionable tips for the student in Chinese."
+        }
+      },
+      required: ["commonErrors", "solutions"]
+    }
+  },
+  required: ["corrections", "summary"]
 };
 
 // --- API Functions ---
@@ -240,6 +275,41 @@ export const extractWordsFromImage = async (base64Image: string): Promise<string
   if (!text) throw new Error("Could not read image");
   const data = JSON.parse(text) as { words: string[] };
   return data.words;
+};
+
+export const analyzeHomework = async (base64Images: string[]): Promise<HomeworkAnalysisResult> => {
+  const model = "gemini-2.5-flash";
+  
+  // Construct parts: Images first, then text prompt
+  const parts: any[] = base64Images.map(img => ({
+    inlineData: { mimeType: "image/jpeg", data: img }
+  }));
+  
+  parts.push({ 
+    text: `You are a helpful English homework grading assistant for a 4th-grade student.
+    Analyze the uploaded homework images.
+    1. Identify each question or exercise (e.g., fill in the blanks, sentences).
+    2. Transcribe the student's answer.
+    3. Check if the answer is correct based on English grammar and context.
+    4. If incorrect, provide the correct answer and a very simple explanation (in Chinese).
+    5. At the end, analyze the overall mistakes (e.g., "confusing he/she", "forgetting plural 's'") and give specific tips.
+    
+    Return the result in JSON format.`
+  });
+
+  const response = await ai.models.generateContent({
+    model,
+    contents: { parts },
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: homeworkAnalysisSchema,
+      temperature: 0.5
+    }
+  });
+
+  const text = response.text;
+  if (!text) throw new Error("Could not analyze homework");
+  return JSON.parse(text) as HomeworkAnalysisResult;
 };
 
 export const generateStoryAudio = async (text: string): Promise<{ audioData: Float32Array; sampleRate: number }> => {

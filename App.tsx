@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AppView } from './types';
 import { StoryReader } from './components/StoryReader';
@@ -5,6 +6,7 @@ import { WordGame } from './components/WordGame';
 import { ChatBuddy } from './components/ChatBuddy';
 import { CrosswordGame } from './components/CrosswordGame';
 import { DictationPractice } from './components/DictationPractice';
+import { HomeworkHelper } from './components/HomeworkHelper';
 import { LearningCalendar } from './components/LearningCalendar';
 
 const App: React.FC = () => {
@@ -82,6 +84,8 @@ const App: React.FC = () => {
         return <CrosswordGame onAddScore={handleAddScore} onBack={() => setCurrentView(AppView.HOME)} onLearnWords={handleLearnWords} />;
       case AppView.DICTATION:
         return <DictationPractice onBack={() => setCurrentView(AppView.HOME)} onLearnWords={handleLearnWords} />;
+      case AppView.HOMEWORK_HELPER:
+        return <HomeworkHelper onBack={() => setCurrentView(AppView.HOME)} />;
       case AppView.CALENDAR:
         return <LearningCalendar onBack={() => setCurrentView(AppView.HOME)} />;
       default:
@@ -171,6 +175,13 @@ const Home: React.FC<{ onViewChange: (view: AppView) => void }> = ({ onViewChang
           onClick={() => onViewChange(AppView.DICTATION)}
         />
         <FeatureCard 
+          title="Homework Helper"
+          description="Upload homework photos for instant checking!"
+          emoji="✍️"
+          color="bg-orange-400"
+          onClick={() => onViewChange(AppView.HOMEWORK_HELPER)}
+        />
+        <FeatureCard 
           title="My Journal"
           description="See all the words you learned today!"
           emoji="📅"
@@ -204,12 +215,4 @@ const FeatureCard: React.FC<{
 
     <div className="p-8 flex-1 flex flex-col">
       <h3 className="text-2xl font-display font-bold text-gray-800 mb-3 group-hover:text-brand-dark">{title}</h3>
-      <p className="text-gray-500 leading-relaxed flex-1">{description}</p>
-      <div className="mt-6 flex items-center text-brand font-bold group-hover:translate-x-2 transition-transform">
-        Let's Go <span className="ml-2">➜</span>
-      </div>
-    </div>
-  </button>
-);
-
-export default App;
+      <p className="text-gray-
