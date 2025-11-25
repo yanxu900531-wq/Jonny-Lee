@@ -215,4 +215,12 @@ const FeatureCard: React.FC<{
 
     <div className="p-8 flex-1 flex flex-col">
       <h3 className="text-2xl font-display font-bold text-gray-800 mb-3 group-hover:text-brand-dark">{title}</h3>
-      <p className="text-gray-
+      <p className="text-gray-500 leading-relaxed flex-1">{description}</p>
+      <div className="mt-6 flex items-center text-brand font-bold group-hover:translate-x-2 transition-transform">
+        Let's Go <span className="ml-2">➜</span>
+      </div>
+    </div>
+  </button>
+);
+
+export default App;

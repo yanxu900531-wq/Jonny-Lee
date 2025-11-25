@@ -286,15 +286,47 @@ export const analyzeHomework = async (base64Images: string[]): Promise<HomeworkA
   }));
   
   parts.push({ 
-    text: `You are a helpful English homework grading assistant for a 4th-grade student.
-    Analyze the uploaded homework images.
-    1. Identify each question or exercise (e.g., fill in the blanks, sentences).
-    2. Transcribe the student's answer.
-    3. Check if the answer is correct based on English grammar and context.
-    4. If incorrect, provide the correct answer and a very simple explanation (in Chinese).
-    5. At the end, analyze the overall mistakes (e.g., "confusing he/she", "forgetting plural 's'") and give specific tips.
+    text: `You are a Strict Exam Grader for Chinese Primary School English (People's Education Press / PEP Standard / 人教版).
+    Your job is to grade homework strictly according to standard textbook grammar rules, NOT colloquial native speech.
+
+    *** CONTEXT ISOLATION RULE (IMPORTANT) ***
+    - The image may contain multiple questions (e.g., I, II, III).
+    - Analyze each numbered question INDEPENDENTLY.
+    - DO NOT HALLUCINATE: Only read text that is visually present next to the specific question number.
+    - If you see "I.1" and "I.2", treat them as separate worlds. Do not mix their text.
+
+    *** PEP EXAM STANDARD RULES (STRICT ENFORCEMENT) ***
     
-    Return the result in JSON format.`
+    1. **"THERE BE" QUESTIONS TRAP (Critical)**:
+       - In general questions (Is there...? Are there...?), standard PEP grammar requires **"ANY"**.
+       - **RULE**: If a student writes "Are there MANY...", mark it as **WRONG**.
+       - **Reason**: In Chinese primary exams, this tests the "some vs any" rule. "Many" is considered a distractor/mistake in this specific context.
+       - Correct: "Are there ANY snakes?"
+       - Wrong: "Are there MANY snakes?" (Mark as false).
+       
+    2. **SOME vs ANY**:
+       - Affirmative (+) -> SOME. (e.g., "There are some books.")
+       - Negative (-) -> ANY. (e.g., "There aren't any books.")
+       - Question (?) -> ANY. (e.g., "Do you have any books?")
+       - Exception: "Would you like some...?" (Offer) is allowed.
+
+    3. **PHONICS & VISUALS**:
+       - Look for UNDERLINED parts of words.
+       - If asking about "sound" or "pronunciation", compare the IPA of the underlined part.
+       - Example: "Big" vs "Bike" (i). /ɪ/ vs /aɪ/ -> Different.
+
+    4. **STRICT SYNTAX**:
+       - No colloquialisms like "gonna", "wanna".
+       - Check Subject-Verb Agreement carefully (He like -> WRONG).
+    
+    OUTPUT FORMAT (JSON):
+    1. Question Number (e.g. "III.1").
+    2. Student Text (Transcribe exactly what is written).
+    3. isCorrect (boolean).
+    4. Correct Answer (if wrong).
+    5. Explanation (Chinese).
+    
+    Ignore non-English text instructions.`
   });
 
   const response = await ai.models.generateContent({
@@ -303,7 +335,7 @@ export const analyzeHomework = async (base64Images: string[]): Promise<HomeworkA
     config: {
       responseMimeType: "application/json",
       responseSchema: homeworkAnalysisSchema,
-      temperature: 0.5
+      temperature: 0.1 // Ultra-low temperature for strict rule following
     }
   });
 

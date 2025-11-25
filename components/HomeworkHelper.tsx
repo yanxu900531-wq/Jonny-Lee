@@ -21,18 +21,21 @@ export const HomeworkHelper: React.FC<HomeworkHelperProps> = ({ onBack }) => {
 
     // Convert all selected files to base64
     const newImages: string[] = [];
-    const promises = Array.from(files).map(file => {
-      return new Promise<void>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (reader.result) {
-            newImages.push((reader.result as string).split(',')[1]);
-          }
-          resolve();
-        };
-        reader.readAsDataURL(file);
-      });
-    });
+    const promises: Promise<void>[] = [];
+    
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        promises.push(new Promise<void>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+            if (reader.result) {
+                newImages.push((reader.result as string).split(',')[1]);
+            }
+            resolve();
+            };
+            reader.readAsDataURL(file);
+        }));
+    }
 
     await Promise.all(promises);
     setImages(prev => [...prev, ...newImages]);
